@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>An Island, Through the Seasons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1f1d1a;
+      --paper: #efe9df;
+      --rule: rgba(31, 29, 26, 0.18);
+      --accent: #6a4a2e;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      background: #1a1612;
+      color: var(--ink);
+      font-family: "Cormorant Garamond", Georgia, serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+    .stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .stage::before {
+      /* paper grain */
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 3px 3px, 5px 5px;
+      background-position: 0 0, 1px 2px;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      z-index: 5;
+    }
+    .stage::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(140% 100% at 50% 60%, transparent 65%, rgba(0,0,0,0.22) 100%);
+      pointer-events: none;
+      z-index: 6;
+    }
+    .scene-wrap {
+      position: absolute;
+      inset: 0;
+    }
+    .scene-wrap svg { width: 100%; height: 100%; display: block; }
+
+    .title {
+      position: absolute;
+      top: 28px; left: 32px;
+      z-index: 10;
+      font-style: italic;
+      font-size: 22px;
+      letter-spacing: 0.01em;
+      color: rgba(31,29,26,0.65);
+    }
+    .title em { font-style: normal; font-weight: 500; color: var(--ink); }
+    .meta {
+      position: absolute;
+      top: 28px; right: 32px;
+      z-index: 10;
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(31,29,26,0.55);
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    /* control panel — floats over scene with subtle gradient for legibility */
+    .panel {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 80px 40px 30px;
+      display: grid;
+      grid-template-columns: minmax(260px, 1.6fr) 1fr 1fr 1fr;
+      gap: 36px;
+      align-items: end;
+      z-index: 8;
+      pointer-events: none;
+      background: linear-gradient(180deg,
+        rgba(20,16,12,0) 0%,
+        rgba(20,16,12,0.12) 40%,
+        rgba(20,16,12,0.38) 100%);
+      backdrop-filter: blur(0.5px);
+    }
+    .panel > * { pointer-events: auto; }
+    .control .label, .control .label .val { color: rgba(255,250,240,0.95) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+    .control .label span:first-child { color: rgba(255,250,240,0.7) !important; }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: linear-gradient(90deg, rgba(255,250,240,0.7), rgba(255,250,240,0.3)) !important;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      background: #faf3e6 !important;
+      border: 2px solid rgba(20,16,12,0.6) !important;
+    }
+    .season-tics { color: rgba(255,250,240,0.55) !important; }
+    .season-tics .active { color: rgba(255,250,240,1) !important; }
+
+    /* segmented control for Hour */
+    .seg {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: rgba(20,16,12,0.28);
+      border: 1px solid rgba(255,250,240,0.18);
+      border-radius: 2px;
+      padding: 3px;
+      backdrop-filter: blur(4px);
+    }
+    .seg-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: rgba(255,250,240,0.6);
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-transform: uppercase;
+      padding: 8px 4px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.18s ease;
+    }
+    .seg-btn:hover { color: rgba(255,250,240,0.9); background: rgba(255,250,240,0.06); }
+    .seg-btn.active {
+      background: rgba(255,250,240,0.92);
+      color: #1f1d1a;
+      font-weight: 500;
+    }
+
+    /* drift button */
+    .drift-btn {
+      appearance: none;
+      border: 1px solid rgba(255,250,240,0.55);
+      background: transparent;
+      color: rgba(255,250,240,0.95);
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-transform: uppercase;
+      padding: 11px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    }
+    .drift-btn:hover { background: rgba(255,250,240,0.12); }
+
+    .title, .meta, .signature {
+      color: rgba(255,250,240,0.85) !important;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+    .title em { color: rgba(255,250,240,1) !important; }
+    .control { display: flex; flex-direction: column; gap: 10px; }
+    .control .label {
+      font-family: "Poppins", sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(31,29,26,0.55);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .control .label .val {
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-style: normal;
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    /* track + thumb */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      background: transparent;
+      cursor: ew-resize;
+      height: 24px;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 2px;
+      background: linear-gradient(90deg, rgba(31,29,26,0.55), rgba(31,29,26,0.25));
+      border: none;
+    }
+    input[type="range"]::-moz-range-track {
+      height: 2px;
+      background: rgba(31,29,26,0.4);
+      border: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--ink);
+      border: 3px solid var(--paper);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      margin-top: -8px;
+      transition: transform 0.15s ease;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.1); }
+    input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--ink);
+      border: 3px solid var(--paper);
+    }
+
+    /* season slider — special gradient track */
+    .season input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: linear-gradient(90deg,
+        #cdd9e3 0%,
+        #cdd9e3 12%,
+        #f3c8d6 38%,
+        #87b85a 62%,
+        #d27a3b 88%,
+        #cdd9e3 100%);
+      border-radius: 2px;
+    }
+    .season input[type="range"]::-webkit-slider-thumb { margin-top: -8px; }
+
+    .season-tics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      font-family: "Poppins", sans-serif;
+      font-weight: 500;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-transform: uppercase;
+      color: rgba(31,29,26,0.45);
+      margin-top: 2px;
+    }
+    .season-tics span:nth-child(1) { text-align: left; }
+    .season-tics span:nth-child(2) { text-align: center; }
+    .season-tics span:nth-child(3) { text-align: center; }
+    .season-tics span:nth-child(4) { text-align: right; }
+    .season-tics .active { color: var(--ink); font-weight: 500; }
+    .season-tics span {
+      cursor: pointer;
+      padding: 6px 2px;
+      transition: color 0.18s ease, transform 0.15s ease;
+      user-select: none;
+      -webkit-user-select: none;
+      border-radius: 2px;
+    }
+    .season-tics span:hover {
+      color: rgba(255,250,240,1) !important;
+      transform: translateY(-1px);
+    }
+    .season-tics span:active { transform: translateY(0); opacity: 0.75; }
+
+    .signature {
+      position: absolute;
+      bottom: 8px;
+      left: 32px;
+      font-family: "DM Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(31,29,26,0.4);
+    }
+
+    /* responsive */
+    @media (max-width: 820px) {
+      .panel { grid-template-columns: 1fr 1fr; gap: 20px 24px; padding: 18px 20px 22px; }
+      .title, .meta { font-size: 14px; top: 14px; }
+      .title { left: 16px; }
+      .meta { right: 16px; font-size: 10px; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body style="background-color: rgba(28, 27, 27, 0); font-family: Poppins">
+  <div id="root"></div>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="palette.jsx"></script>
+  <script type="text/babel" src="scene-sky.jsx"></script>
+  <script type="text/babel" src="scene-island.jsx"></script>
+  <script type="text/babel" src="scene-tree.jsx"></script>
+  <script type="text/babel" src="scene-particles.jsx"></script>
+  <script type="text/babel" src="scene.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
