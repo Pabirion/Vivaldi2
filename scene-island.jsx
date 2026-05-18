@@ -32,6 +32,38 @@ function Water({ pal, t, time }) {
 
     );
   }
+
+  // Foreground wave crests — undulating bands with subtle depth shading.
+  // Each crest gets a thin darker line just below it to suggest the trough
+  // sitting in shadow behind the wave.
+  const crests = [];
+  for (let i = 0; i < 8; i++) {
+    const baseY = 640 + i * 32;
+    const amp = 6 + i * 1.6;           // foreground waves are taller
+    const freq = 0.0009 + i * 0.00012; // slightly different phase per band
+    const phase = tt * (0.7 + i * 0.08) + i * 1.3;
+    // Build a wavy polyline across the width
+    let d = `M 0 ${baseY + Math.sin(phase) * amp}`;
+    let dShadow = `M 0 ${baseY + 3 + Math.sin(phase) * amp}`;
+    for (let x = 80; x <= 1600; x += 80) {
+      const y = baseY + Math.sin(phase + x * freq) * amp;
+      d += ` L ${x} ${y}`;
+      dShadow += ` L ${x} ${y + 3}`;
+    }
+    const op = 0.35 - i * 0.025;
+    // Shadow first (drawn below the crest)
+    crests.push(
+      <path key={`crest-shadow-${i}`} d={dShadow} stroke={water}
+        strokeWidth={1.4 - i * 0.08} fill="none"
+        opacity={Math.max(0.05, (0.28 - i * 0.022) * (1 - nightT * 0.4))}
+        strokeLinecap="round" />
+    );
+    // Then the lit crest line
+    crests.push(
+      <path key={`crest-${i}`} d={d} stroke={waterHi} strokeWidth={1.6 - i * 0.1}
+        fill="none" opacity={Math.max(0.08, op)} strokeLinecap="round" />
+    );
+  }
   return (
     <g>
       <defs>
@@ -42,6 +74,7 @@ function Water({ pal, t, time }) {
       </defs>
       <rect x="0" y="540" width="1600" height="360" fill="url(#waterGrad)" />
       {lines}
+      {crests}
     </g>);
 
 }
@@ -49,124 +82,59 @@ function Water({ pal, t, time }) {
 function Island({ pal, season }) {
   const w = window.seasonWeights(season);
   const snow = w[0]; // snow coverage in winter
-  // Island silhouette: extends well below visible area so it sits IN the water, not on it.
+  // Island silhouette: leaf-like, scaled down further (~62% of original).
   const islandPath =
-  "M 430 626 " +
-  "C 480 612 550 604 630 602 " +
-  "C 720 600 800 604 870 614 " +
-  "C 920 622 960 632 975 652 " +
-  "C 980 686 945 718 870 736 " +
-  "C 795 752 690 752 600 744 " +
-  "C 525 736 470 716 450 690 " +
-  "C 438 666 440 642 430 626 Z";
+  "M 478 664 L 495 650 L 517 640 L 540 631 L 566 621 L 591 611 L 616 603 " +
+  "L 642 597 L 668 594 L 694 596 L 718 601 L 743 608 L 767 615 L 793 621 " +
+  "L 819 624 L 846 628 L 874 631 L 904 633 L 934 636 L 963 638 L 992 640 " +
+  "L 1023 644 L 1055 649 L 1089 654 L 1125 659 L 1164 663 L 1184 666 " +
+  "C 1196 682 1177 699 1143 708 C 1100 717 1039 722 978 722 " +
+  "C 916 723 855 720 792 718 C 730 715 668 717 610 713 " +
+  "C 561 709 514 702 486 692 C 467 680 463 670 478 664 Z";
 
   const underwaterPath =
-  "M 440 668 " +
-  "C 520 686 620 696 720 696 " +
-  "C 820 696 900 686 960 668 " +
-  "C 970 706 925 738 855 752 " +
-  "C 780 766 680 766 590 758 " +
-  "C 510 748 460 724 440 696 Z";
+  "M 478 675 C 590 688 725 697 861 697 C 984 697 1095 692 1187 678 " +
+  "C 1196 694 1175 709 1132 717 C 1070 725 984 728 898 727 " +
+  "C 799 725 689 723 602 717 C 540 712 498 702 478 692 Z";
 
-  const grassPath =
-  "M 430 626 " +
-  "C 480 612 550 604 630 602 " +
-  "C 720 600 800 604 870 614 " +
-  "C 920 622 960 632 975 652 " +
-  "L 975 668 " +
-  "C 950 644 910 634 860 626 " +
-  "C 800 616 720 614 630 614 " +
-  "C 555 614 500 622 440 638 Z";
+  // Snow cap path — traces the jagged top and dips down a touch.
+  const snowCapPath =
+  "M 478 664 L 495 650 L 517 640 L 540 631 L 566 621 L 591 611 L 616 603 " +
+  "L 642 597 L 668 594 L 694 596 L 718 601 L 743 608 L 767 615 L 793 621 " +
+  "L 819 624 L 846 628 L 874 631 L 904 633 L 934 636 L 963 638 L 992 640 " +
+  "L 1023 644 L 1055 649 L 1089 654 L 1125 659 L 1164 663 L 1184 666 " +
+  "L 1177 678 C 1083 664 960 659 836 660 C 713 660 602 665 516 676 " +
+  "C 485 680 474 673 478 664 Z";
 
   return (
     <g>
       {/* underwater silhouette — softens the join with water */}
       <path d={underwaterPath} fill={pal.water} opacity="0.55" />
-      <ellipse cx="700" cy="720" rx="320" ry="22" fill="rgba(0,0,0,0.30)" />
+      <ellipse cx="830" cy="709" rx="345" ry="15" fill="rgba(0,0,0,0.30)" />
 
-      <path d="M 430 668 C 520 684 620 694 720 694 C 820 694 905 684 970 666"
+      <path d="M 478 671 C 614 685 750 692 873 692 C 984 692 1083 686 1187 675"
       stroke={pal.waterHi} strokeWidth="2.5" fill="none" opacity="0.55" />
-      <path d="M 410 678 C 520 696 620 706 720 706 C 820 706 920 696 980 676"
+      <path d="M 467 682 C 614 696 750 702 873 702 C 984 702 1083 697 1193 685"
       stroke={pal.waterHi} strokeWidth="1.4" fill="none" opacity="0.4" />
 
       <path d={islandPath} fill={pal.soil} />
       <path
-        d="M 440 660 C 540 684 640 696 740 696 C 830 696 910 684 965 660 C 955 706 890 736 800 750 C 690 764 580 758 490 740 C 430 720 415 696 440 660 Z"
+        d="M 485 673 C 627 688 762 699 885 699 C 997 699 1095 692 1187 680 C 1181 697 1132 712 1070 718 C 997 724 898 727 812 725 C 725 724 639 720 577 713 C 528 708 491 697 485 673 Z"
         fill={pal.soilLight}
         opacity="0.55" />
-      
 
-      <ellipse cx="455" cy="700" rx="26" ry="9" fill={pal.rock} />
-      <ellipse cx="425" cy="708" rx="14" ry="5" fill={pal.rock} opacity="0.8" />
-      <ellipse cx="910" cy="706" rx="30" ry="10" fill={pal.rock} style={{ fill: "rgb(179, 138, 67)" }} />
-      <ellipse cx="945" cy="714" rx="16" ry="6" fill={pal.rock} opacity="0.8" />
+      <ellipse cx="509" cy="688" rx="20" ry="6" fill={pal.rock} />
+      <ellipse cx="486" cy="694" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
+      <ellipse cx="1144" cy="692" rx="21" ry="7" fill={pal.rock} style={{ fill: "rgb(179, 138, 67)" }} />
+      <ellipse cx="1170" cy="697" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
 
-      {/* grass top */}
-      <path d={grassPath} fill={pal.grass} />
-      {/* grass highlight */}
-      <path
-        d="M 460 616 C 540 604 640 600 720 600 C 800 600 880 606 950 618 C 880 608 800 604 720 604 C 640 604 540 608 460 616 Z"
-        fill={pal.grassHi} opacity="0.7" />
-      
-      <ellipse cx="700" cy="626" rx="180" ry="10" fill={pal.grassDark} opacity="0.45" />
-
-      {/* dense grass tufts — clipped to grass region of the island */}
-      <defs>
-        <clipPath id="grassClip">
-          <path d={grassPath} />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#grassClip)">
-        {Array.from({ length: 110 }).map((_, i) => {
-          // distribute across grass band x∈[440,970], y∈[604,640]
-          const seed = i * 9301 + 49297;
-          const rx = seed * 233280 % 53000 / 53000; // 0..1
-          const ry = seed * 7919 % 36000 / 36000;
-          const x = 440 + rx * 530;
-          const y = 606 + ry * 32;
-          const h = 5 + i * 7 % 7; // tuft height
-          const lean = i * 3 % 5 - 2;
-          return (
-            <g key={`tf-${i}`} opacity={1 - snow * 0.85}>
-              <path
-                d={`M ${x - 2 + lean} ${y} l 1 ${-h + 1} M ${x} ${y} l ${lean * 0.4} ${-h - 1} M ${x + 2 + lean} ${y} l -1 ${-h}`}
-                stroke={pal.grassDark}
-                strokeWidth="1.1"
-                strokeLinecap="round"
-                fill="none" />
-              
-            </g>);
-
-        })}
-        {/* lighter blades for variation */}
-        {Array.from({ length: 70 }).map((_, i) => {
-          const seed = i * 4253 + 1117;
-          const rx = seed * 199 % 47000 / 47000;
-          const ry = seed * 113 % 31000 / 31000;
-          const x = 440 + rx * 530;
-          const y = 608 + ry * 28;
-          const h = 3 + i * 5 % 5;
-          return (
-            <path
-              key={`tfl-${i}`}
-              d={`M ${x} ${y} l 0 ${-h}`}
-              stroke={pal.grassHi}
-              strokeWidth="0.9"
-              strokeLinecap="round"
-              opacity={(1 - snow * 0.85) * 0.85} />);
-
-
-        })}
-      </g>
-
-      {/* snow blanket over grass (winter) */}
+      {/* snow blanket over the top (winter) */}
       {snow > 0.01 &&
       <g opacity={snow}>
-          <path d={grassPath} fill={pal.snow} />
+          <path d={snowCapPath} fill={pal.snow} />
           <path
-          d="M 240 616 C 360 602 500 596 640 598 C 780 600 920 608 1000 622 C 920 614 780 606 640 606 C 500 606 360 612 240 616 Z"
+          d="M 467 650 C 602 637 750 631 885 632 C 1021 633 1132 638 1193 647 C 1132 643 1021 638 885 637 C 750 637 602 643 467 650 Z"
           fill="#ffffff" opacity="0.55" />
-        
         </g>
       }
     </g>);
@@ -178,7 +146,7 @@ function Bench({ pal, season }) {
   const snow = w[0];
   // bench positioned to the right of the tree
   return (
-    <g transform="translate(800 612)">
+    <g transform="translate(812 622) scale(0.7)">
       {/* shadow */}
       <ellipse cx="55" cy="36" rx="80" ry="6" fill="rgba(0,0,0,0.22)" />
 

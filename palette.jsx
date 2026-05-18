@@ -16,8 +16,8 @@ const PALETTES = [
     grass:     "#d8dde2",
     grassHi:   "#eef1f3",
     grassDark: "#9aa6ad",
-    soil:      "#5a4d42",
-    soilLight: "#7a6b5d",
+    soil:      "#4d5e44",
+    soilLight: "#6f8062",
     rock:      "#766a5e",
     trunk:     "#3a2e25",
     trunkHi:   "#5a4838",
@@ -43,8 +43,8 @@ const PALETTES = [
     grass:     "#a3c768",
     grassHi:   "#c5dd86",
     grassDark: "#6f9c46",
-    soil:      "#5a3f2a",
-    soilLight: "#856349",
+    soil:      "#5e8a3a",
+    soilLight: "#84b15a",
     rock:      "#8a7d6e",
     trunk:     "#3f2e22",
     trunkHi:   "#624936",
@@ -70,8 +70,8 @@ const PALETTES = [
     grass:     "#5e9c3a",
     grassHi:   "#84bb5e",
     grassDark: "#3f7424",
-    soil:      "#5a3f2a",
-    soilLight: "#856349",
+    soil:      "#4a7e2c",
+    soilLight: "#6ea44a",
     rock:      "#8e8268",
     trunk:     "#3a2820",
     trunkHi:   "#5a3e2c",
@@ -97,8 +97,8 @@ const PALETTES = [
     grass:     "#9a7a3a",
     grassHi:   "#bf9c54",
     grassDark: "#6e5523",
-    soil:      "#4e3520",
-    soilLight: "#75503a",
+    soil:      "#7a8a30",
+    soilLight: "#a8b04c",
     rock:      "#8a7558",
     trunk:     "#36241a",
     trunkHi:   "#553825",
@@ -143,11 +143,17 @@ function mixColor(a, b, t) {
   return `rgba(${r},${g},${bl},${al.toFixed(3)})`;
 }
 
+// Smoothstep (cubic Hermite) — eases at both ends so seasons hold near
+// their pure state longer, with a gentler curve through the middle.
+function smoothstep(t) {
+  return t * t * (3 - 2 * t);
+}
+
 // season is a float [0, 4) — wraps. Returns interpolated palette.
 function getPalette(season) {
   const s = ((season % 4) + 4) % 4;
   const i = Math.floor(s);
-  const t = s - i;
+  const t = smoothstep(s - i);
   const A = PALETTES[i];
   const B = PALETTES[(i + 1) % 4];
   const out = {};
@@ -160,7 +166,7 @@ function seasonWeights(season) {
   const s = ((season % 4) + 4) % 4;
   const w = [0, 0, 0, 0];
   const i = Math.floor(s);
-  const t = s - i;
+  const t = smoothstep(s - i);
   w[i] = 1 - t;
   w[(i + 1) % 4] = t;
   return w;

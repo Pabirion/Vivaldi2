@@ -1,6 +1,17 @@
 // Sky, sun/moon, distant clouds.
 
-function Sky({ pal, time, season }) {
+function Sky({ pal, time, season, t = 0 }) {
+  // Clouds always drift to the right and loop at a constant, gentle pace —
+  // independent of wind strength.
+  const speed = 0.015;
+  const wrap = 2800; // total travel before wrapping back to the left
+  const cloudDrift = (t * speed) % wrap - 1300;
+  // Second, smaller cloud — slightly faster, offset on both axes so it never
+  // sits directly above the main cloud.
+  const speed2 = 0.022;
+  const wrap2 = 2400;
+  const cloud2Drift = (t * speed2) % wrap2 - 1100;
+  const starDrift = Math.sin(t * 0.00005) * 20;
   // time: 0..1 (0=dawn, 0.25=morning, 0.5=noon, 0.75=dusk, ~1=night)
   // sun arc across viewbox 1600x900
   const ang = Math.PI - time * Math.PI; // from right (dawn) to left (dusk)
@@ -56,7 +67,7 @@ function Sky({ pal, time, season }) {
 
       {/* stars at night (drawn before moon so moon overlaps) */}
       {nightT > 0.3 &&
-      <g opacity={nightT}>
+      <g opacity={nightT} transform={`translate(${starDrift} 0)`}>
           {Array.from({ length: 60 }).map((_, i) => {
           const x = i * 173 % 1600;
           const y = i * 91 % 380;
@@ -89,8 +100,21 @@ function Sky({ pal, time, season }) {
       <circle cx={cx} cy={cy} r="42" fill={pal.sun} opacity="0.98" />
       }
 
-      {/* big cumulus cloud near the horizon — sits behind the island */}
-      <CumulusCloud nightT={nightT} morningT={morningT} eveningT={eveningT} season={season} />
+      {/* big cumulus cloud near the horizon — sits behind the island.
+          Slightly desaturated to read as further away through atmospheric haze. */}
+      <g transform={`translate(${cloudDrift} 0)`} style={{ filter: "saturate(0.6)" }}>
+        <CumulusCloud nightT={nightT} morningT={morningT} eveningT={eveningT} season={season} />
+      </g>
+
+      {/* smaller, higher cumulus — offset on Y, drifts a touch faster.
+          Pushed brighter & slightly desaturated so it reads as a crisper, whiter cloud.
+          CumulusCloud has an internal translate(680, 510); the outer scale
+          shifts that to (286, 214), so we offset to land the small cloud
+          near world (cloud2Drift + 400, 280). */}
+      <g transform={`translate(${cloud2Drift + 114} 66) scale(0.42)`}
+         style={{ filter: "brightness(1.15) saturate(0.75)" }}>
+        <CumulusCloud nightT={nightT} morningT={morningT} eveningT={eveningT} season={season} />
+      </g>
 
       {/* atmospheric fog band near horizon */}
       <rect x="0" y="430" width="1600" height="120" fill={pal.fog} style={{ fill: "rgba(246, 247, 248, 0)" }} />

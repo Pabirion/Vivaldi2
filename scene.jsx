@@ -49,7 +49,7 @@ function Scene({ season, time, wind, tree }) {
 
   return (
     <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" style={{ width: "100%", height: "100%" }}>
-      <window.Sky pal={pal} time={time} season={season} />
+      <window.Sky pal={pal} time={time} season={season} t={t} />
       <Birds pal={pal} season={season} t={t} />
       <window.Water pal={pal} t={t} time={time} />
       <window.Island pal={pal} season={season} />
