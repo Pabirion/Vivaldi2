@@ -89,7 +89,7 @@ function Tree({ pal, season, wind, t, time = 0.5, x = 560, y = 588, scale = 1.1 
   return (
     <g transform={`translate(${x} ${y}) scale(${scale}) rotate(${sway * 0.3})`}>
       {/* shadow on ground under tree */}
-      <ellipse cx="0" cy="6" rx="120" ry="14" fill="rgba(0,0,0,0.18)" />
+      <ellipse cx="0" cy="4" rx="90" ry="10" fill="rgba(0,0,0,0.18)" />
 
       {/* branches */}
       <g>

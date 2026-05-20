@@ -4,7 +4,7 @@ const { useState: useStateA, useEffect: useEffectA } = React;
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "treeX": 660,
-  "treeY": 604,
+  "treeY": 598,
   "treeScale": 0.9,
   "showBirds": true,
   "particleDensity": 1.0

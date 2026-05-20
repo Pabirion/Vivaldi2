@@ -123,10 +123,10 @@ function Island({ pal, season }) {
         fill={pal.soilLight}
         opacity="0.55" />
 
-      <ellipse cx="509" cy="688" rx="20" ry="6" fill={pal.rock} />
-      <ellipse cx="486" cy="694" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
-      <ellipse cx="1144" cy="692" rx="21" ry="7" fill={pal.rock} style={{ fill: "rgb(179, 138, 67)" }} />
-      <ellipse cx="1170" cy="697" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
+      <ellipse cx="522" cy="648" rx="20" ry="6" fill={pal.rock} />
+      <ellipse cx="500" cy="657" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
+      <ellipse cx="1130" cy="668" rx="21" ry="7" fill={pal.rock} style={{ fill: "rgb(179, 138, 67)" }} />
+      <ellipse cx="1155" cy="672" rx="11" ry="4" fill={pal.rock} opacity="0.8" />
 
       {/* snow blanket over the top (winter) */}
       {snow > 0.01 &&
