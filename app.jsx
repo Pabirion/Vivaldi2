@@ -1,10 +1,27 @@
 // Main app — title, scene, controls overlaid on top of the scene.
 
-const { useState: useStateA, useEffect: useEffectA } = React;
+const { useState: useStateA, useEffect: useEffectA, useRef: useRefA } = React;
+
+function ScrollHint() {
+  const [hidden, setHidden] = useStateA(false);
+  useEffectA(() => {
+    const onScroll = () => { if (window.scrollY > 20) setHidden(true); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <div className={`scroll-hint${hidden ? ' hidden' : ''}`}>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="rgba(255,250,240,0.75)" strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </div>);
+}
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "treeX": 660,
-  "treeY": 615,
+  "treeY": 635,
   "treeScale": 0.9,
   "showBirds": true,
   "particleDensity": 1.0
@@ -69,6 +86,7 @@ function App() {
           <div style={{ opacity: 0.7 }}>{windLabel}</div>
         </div>
         <div className="signature">No. 04 — A study in passing time</div>
+        <ScrollHint />
       </div>
 
       {/* Controls panel */}

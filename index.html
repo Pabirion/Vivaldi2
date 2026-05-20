@@ -326,9 +326,28 @@
       .panel .control:nth-child(2) { grid-column: 1 / -1; }
       .panel .control:nth-child(3) { grid-column: 1 / -1; }
       .panel .control:nth-child(4) { grid-column: 1 / -1; }
+      .scroll-hint {
+        display: block;
+        position: absolute;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        animation: bounce 1.4s ease-in-out infinite;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+      }
+      .scroll-hint.hidden { opacity: 0; }
       .title { font-size: 13px; top: 14px; left: 16px; }
       .meta { font-size: 10px; top: 14px; right: 16px; }
       .signature { display: none; }
+      .scroll-hint {
+        display: none;
+      }
+      @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.9; }
+        50% { transform: translateX(-50%) translateY(8px); opacity: 0.5; }
+      }
       input[type="range"] { height: 54px; }
       input[type="range"]::-webkit-slider-thumb {
         width: 36px !important;
