@@ -301,14 +301,15 @@
 
     /* responsive — mobile */
     @media (max-width: 600px) {
-      html { height: auto; overflow-y: scroll; -webkit-overflow-scrolling: touch; background: #14100c; }
-      body { height: auto; overflow: visible; background: #14100c; }
-      #root { height: auto; padding-top: 50vh; }
+      html { height: 100%; }
+      body { height: 100%; overflow-y: scroll; -webkit-overflow-scrolling: touch; background: #14100c; }
+      #root { height: auto; display: block; }
       .scene-area {
-        position: fixed;
-        top: 0; left: 0; right: 0;
+        position: sticky;
+        top: 0;
         height: 50vh;
         z-index: 10;
+        overflow: hidden;
       }
       .stage { position: absolute; inset: 0; }
       .panel {
