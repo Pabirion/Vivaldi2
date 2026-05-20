@@ -285,6 +285,12 @@
       color: rgba(31,29,26,0.4);
     }
 
+    .scroll-hint { display: none; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.9; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 0.5; }
+    }
+
     /* scene-area wraps stage + floating labels */
     .scene-area {
       position: absolute;
@@ -341,13 +347,6 @@
       .title { font-size: 13px; top: 14px; left: 16px; }
       .meta { font-size: 10px; top: 14px; right: 16px; }
       .signature { display: none; }
-      .scroll-hint {
-        display: none;
-      }
-      @keyframes bounce {
-        0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.9; }
-        50% { transform: translateX(-50%) translateY(8px); opacity: 0.5; }
-      }
       input[type="range"] { height: 54px; }
       input[type="range"]::-webkit-slider-thumb {
         width: 36px !important;
