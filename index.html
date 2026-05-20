@@ -285,13 +285,52 @@
       color: rgba(31,29,26,0.4);
     }
 
-    /* responsive */
+    /* scene-area wraps stage + floating labels */
+    .scene-area {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* responsive — tablet */
     @media (max-width: 820px) {
       .panel { grid-template-columns: 1fr 1fr; gap: 20px 24px; padding: 18px 20px 22px; }
       .title, .meta { font-size: 14px; top: 14px; }
       .title { left: 16px; }
       .meta { right: 16px; font-size: 10px; }
     }
+
+    /* responsive — mobile */
+    @media (max-width: 600px) {
+      html, body { height: 100%; overflow: hidden; }
+      #root {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .scene-area {
+        position: relative;
+        flex: 0 0 55vh;
+        overflow: hidden;
+      }
+      .stage {
+        position: absolute;
+        inset: 0;
+      }
+      .panel {
+        position: relative;
+        flex: 1;
+        background: #14100c;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 20px;
+        padding: 20px;
+        backdrop-filter: none;
+        overflow-y: auto;
+      }
+      .title { font-size: 13px; top: 14px; left: 16px; }
+      .meta { font-size: 10px; top: 14px; right: 16px; }
+      .signature { display: none; }
+    }
+
   </style>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>

@@ -52,24 +52,26 @@ function App() {
 
   return (
     <>
-      {/* The scene is the background of everything */}
-      <div className="stage">
-        <div className="scene-wrap">
-          <window.Scene season={season} time={time} wind={wind} tree={tree} />
+      {/* Scene area — wraps stage + floating labels */}
+      <div className="scene-area">
+        <div className="stage">
+          <div className="scene-wrap">
+            <window.Scene season={season} time={time} wind={wind} tree={tree} />
+          </div>
         </div>
+
+        {/* Titling — floating on the scene */}
+        <div className="title" style={{ fontFamily: "Poppins", fontWeight: "500" }}>
+          A small island, <em>{sub.toLowerCase()}</em>
+        </div>
+        <div className="meta">
+          <div>{TIME_OPTIONS.find((o) => o.id === timeId).label}</div>
+          <div style={{ opacity: 0.7 }}>{windLabel}</div>
+        </div>
+        <div className="signature">No. 04 — A study in passing time</div>
       </div>
 
-      {/* Titling — floating on the scene */}
-      <div className="title" style={{ fontFamily: "Poppins", fontWeight: "500" }}>
-        A small island, <em>{sub.toLowerCase()}</em>
-      </div>
-      <div className="meta">
-        <div>{TIME_OPTIONS.find((o) => o.id === timeId).label}</div>
-        <div style={{ opacity: 0.7 }}>{windLabel}</div>
-      </div>
-      <div className="signature">No. 04 — A study in passing time</div>
-
-      {/* Controls panel overlaid on the scene, with subtle gradient for legibility */}
+      {/* Controls panel */}
       <div className="panel">
           <div className="control season">
             <div className="label">
