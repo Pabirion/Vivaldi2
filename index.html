@@ -301,30 +301,25 @@
 
     /* responsive — mobile */
     @media (max-width: 600px) {
-      html, body { height: auto; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      #root {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-        min-height: 100vh;
-      }
+      html { height: auto; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
+      body { height: auto; overflow: visible; }
+      #root { height: auto; }
       .scene-area {
-        position: relative;
-        height: 55vh;
-        flex-shrink: 0;
-        overflow: hidden;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 50vh;
+        z-index: 1;
       }
-      .stage {
-        position: absolute;
-        inset: 0;
-      }
+      .stage { position: absolute; inset: 0; }
       .panel {
         position: relative;
+        margin-top: 50vh;
         background: #14100c;
         grid-template-columns: 1fr 1fr;
         gap: 16px 20px;
-        padding: 20px 20px 40px;
+        padding: 24px 20px 40px;
         backdrop-filter: none;
+        z-index: 2;
       }
       .panel .control.season { grid-column: 1 / -1; }
       .panel .control:nth-child(2) { grid-column: 1 / -1; }
