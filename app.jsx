@@ -98,10 +98,21 @@ function App() {
 
           <div className="control">
             <div className="label">
+              <span>Wind</span>
+              <span className="val" style={{ fontWeight: "500" }}>{windLabel}</span>
+            </div>
+            <input
+            type="range" min="0" max="1" step="0.001"
+            value={wind}
+            onChange={(e) => setWind(parseFloat(e.target.value))} />
+          </div>
+
+          <div className="control">
+            <div className="label">
               <span>Hour</span>
               <span className="val">{TIME_OPTIONS.find((o) => o.id === timeId).label}</span>
             </div>
-            <div className="seg" style={{ 
+            <div className="seg" style={{
               display: "flex",
               width: "100%",
               backgroundColor: "rgba(30, 90, 128, 0.27)",
@@ -115,31 +126,18 @@ function App() {
               key={o.id}
               className={`seg-btn ${timeId === o.id ? "active" : ""}`}
               onClick={() => setTimeId(o.id)}
-              type="button" 
-              style={{ 
-                flex: 1, 
-                fontWeight: timeId === o.id ? "700" : "400", 
+              type="button"
+              style={{
+                flex: 1,
+                fontWeight: timeId === o.id ? "700" : "400",
                 color: "rgba(255, 250, 240)",
-                backgroundColor: timeId === o.id ? "rgba(255, 255, 255, 0.25)" : "rgba(236, 234, 226, 0.1)" 
+                backgroundColor: timeId === o.id ? "rgba(255, 255, 255, 0.25)" : "rgba(236, 234, 226, 0.1)"
                 }}>
              {o.label}
             </button>
            )}
           </div>
         </div>
-
-
-          <div className="control">
-            <div className="label">
-              <span>Wind</span>
-              <span className="val" style={{ fontWeight: "500" }}>{windLabel}</span>
-            </div>
-            <input
-            type="range" min="0" max="1" step="0.001"
-            value={wind}
-            onChange={(e) => setWind(parseFloat(e.target.value))} />
-          
-          </div>
 
           <div className="control">
             <div className="label">
