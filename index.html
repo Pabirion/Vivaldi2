@@ -301,15 +301,17 @@
 
     /* responsive — mobile */
     @media (max-width: 600px) {
-      html, body { height: 100%; overflow: hidden; }
+      html, body { height: auto; overflow-y: auto; -webkit-overflow-scrolling: touch; }
       #root {
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: auto;
+        min-height: 100vh;
       }
       .scene-area {
         position: relative;
-        flex: 0 0 55vh;
+        height: 55vh;
+        flex-shrink: 0;
         overflow: hidden;
       }
       .stage {
@@ -318,14 +320,11 @@
       }
       .panel {
         position: relative;
-        flex: 1;
         background: #14100c;
         grid-template-columns: 1fr 1fr;
         gap: 16px 20px;
-        padding: 20px;
+        padding: 20px 20px 40px;
         backdrop-filter: none;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
       }
       .panel .control.season { grid-column: 1 / -1; }
       .panel .control:nth-child(2) { grid-column: 1 / -1; }
