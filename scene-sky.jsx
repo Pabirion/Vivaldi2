@@ -16,7 +16,7 @@ function Sky({ pal, time, season, t = 0 }) {
   // sun arc across viewbox 1600x900
   const ang = Math.PI - time * Math.PI; // from right (dawn) to left (dusk)
   const cx = 800 + Math.cos(ang) * 700;
-  const cy = 390 - Math.sin(ang) * 170;
+  const cy = Math.max(180, 320 - Math.sin(ang) * 220);
 
   // Night dimming: when time outside [0.05, 0.95]
   let nightT = 0;
