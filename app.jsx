@@ -159,7 +159,7 @@ function App() {
 
           <div className="control">
             <div className="label">
-              <span>Year</span>
+              <span>Auto</span>
               <span className="val">DRIFT</span>
             </div>
             <YearDrift onCycle={(d) => setSeason((s) => ((s + d) % 4 + 4) % 4)} />
